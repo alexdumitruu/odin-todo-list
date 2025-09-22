@@ -26,6 +26,6 @@ const controllerModule = (function () {
         deleteToDo,
         deleteProject
     }
-});
+})();
 
 export { controllerModule };

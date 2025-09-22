@@ -1,5 +1,7 @@
 class ToDo {
-    constructor(id, title, description, dueDate, priority, checklist, completed) {
+    constructor(id = 0, title = "", description = "", 
+        dueDate = Date.now(), priority, checklist, completed = false)
+    {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -24,27 +26,28 @@ class ToDo {
     setChecklist = (checklist) => { this.checklist = checklist; };
 
     getCompleted = () => this.completed;
-    setCompleted = (completed) => { this.completed = completed; };
+    toggleComplete = () => this.completed = !this.completed;
+
+    getId = () => this.id;
+    createId = () => this.id = Date.now();
 };
 
 class Project {
-    constructor(id, name, todos) {
+    constructor(id = 0, name = "Default Project", todos = []) {
         this.id = id;
         this.name = name;
         this.todos = todos;
-    }
-    constructor() {
-        this.id = 0;
-        this.name = "Default Project";
-        this.todos = [];
     }
     getId = () => this.id;
     getName = () => this.name;
     getTodos = () => this.todos;
 
-    setId = (id) => { this.id = id; };
+    createId = () => this.id = Date.now();
     setName = (name) => { this.name = name; };
     setTodos = (todos) => { this.todos = todos; };
+
+    add = (todo) => this.todos.push(todo);
+    remove = (todo) => this.todos = this.todos.filter(t => t !== todo);
 };
 
 export {ToDo, Project};

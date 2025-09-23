@@ -1,17 +1,16 @@
+import { controllerModule } from "./appLogic";
 import { ToDo, Project } from "./classes";
 import { storageModule } from "./storage";
 
 const renderModule = (function () {
     const renderPage = () => {
-        let projects = storageModule.loadState();
         const app = document.querySelector('.app');
-        // if (!app) {
-        //     console.error('No .app element found!');
-        //     return;
-        // }
         app.innerHTML = "";
+
+        const projects = controllerModule.getProjects();
+
         // sidebar
-        let sidebar = document.createElement('div');
+        const sidebar = document.createElement('div');
         sidebar.classList.add('sidebar')
 
         const newProjectBtn = document.createElement('button');
@@ -27,9 +26,11 @@ const renderModule = (function () {
             input.classList.add('input');
 
             const addBtn = document.createElement('button');
+            addBtn.textContent = 'Add';
             addBtn.classList.add('add-btn');
 
             const cancelBtn = document.createElement('button');
+            cancelBtn.textContent = 'Cancel';
             cancelBtn.classList.add('cancel-btn');
 
             newProjDiv.appendChild(input);
@@ -37,19 +38,12 @@ const renderModule = (function () {
             newProjDiv.appendChild(cancelBtn);
 
             addBtn.addEventListener("click", () => {
-                const projName = input.value.trim();
-                var id = Date.now();
-                var todos = [];
-                var newProj = new Project(id, projName, todos);
-                projects.push(newProj);
-                storageModule.saveState(projects);
+                const name = input.value.trim();
+                if (!name) return;
 
-                const projDiv = document.createElement("div");
-                projDiv.classList.add("project");
-                projDiv.textContent = projName;
-                sidebar.appendChild(projDiv);
-
-                sidebar.removeChild(newProjDiv);
+                const newProject = controllerModule.createProject(name);
+                storageModule.saveState(controllerModule.getProjects());
+                renderPage();
             });
 
             cancelBtn.addEventListener("click", () => {
@@ -57,7 +51,7 @@ const renderModule = (function () {
             })
         });
         // todos
-        let list = document.createElement('div');
+        const list = document.createElement('div');
         list.classList.add('list');
 
         projects.forEach(p => {
@@ -68,61 +62,47 @@ const renderModule = (function () {
 
             projDiv.addEventListener("click", () => {
                 list.innerHTML = "";
-                let newToDoDiv = document.createElement('div');
-                newToDoDiv.classList.add('new-todo-container');
-                list.appendChild(newToDoDiv);
 
-                const input = document.createElement('input');
-                input.classList.add('input-todo');
-
+                const newTodoDiv = document.createElement('div');
+                const inputTitle = document.createElement('input');
                 const dueDateInput = document.createElement('input');
-                dueDateInput.classList.add('input-date-todo');
-                dueDateInput.setAttribute('type', 'date');
+                dueDateInput.type = 'date';
+                const prioritySelect = document.createElement('select');
+                ['Low', 'Medium', 'High'].forEach(priorityLabel => {
+                    const opt = document.createElement('option');
+                    opt.value = priorityLabel;
+                    opt.textContent = priorityLabel;
+                    prioritySelect.appendChild(opt);
+                });
+                const descBox = document.createElement('textarea');
+                const addBtn = document.createElement('button');
+                const cancelBtn = document.createElement('button');
+                addBtn.textContent = 'Add Task';
+                cancelBtn.textContent = 'Cancel';
+                newTodoDiv.append(inputTitle, dueDateInput, prioritySelect, descBox, addBtn, cancelBtn);
+                list.appendChild(newTodoDiv);
 
-                const comboBoxPriority = document.createElement('select');
-                let option1 = document.createElement('option');
-                let option2 = document.createElement('option');
-                let option3 = document.createElement('option');
-                option1.textContent = 'Low';
-                option2.textContent = 'Medium';
-                option3.textContent = 'High';
-                comboBoxPriority.appendChild(option1);
-                comboBoxPriority.appendChild(option2);
-                comboBoxPriority.appendChild(option3);
-
-                const descriptionTextBox = document.createElement('textarea');
-                descriptionTextBox.classList.add('textarea-todo');
-
-                const addTaskBtn = document.createElement('button');
-                const cancelTaskBtn = document.createElement('button');
-
-                addTaskBtn.textContent = "Add Task";
-                cancelTaskBtn.textContent = "Cancel";
-
-                newToDoDiv.append(input, dueDateInput, comboBoxPriority,
-                    descriptionTextBox, addTaskBtn, cancelTaskBtn);
-
-                addTaskBtn.addEventListener("click", () => {
-                    const title = input.value.trim();
-                    const dueDate = dueDateInput.value;
-                    const priority = comboBoxPriority.value;
-                    const description = descriptionTextBox.value.trim();
-
-                    if (!title) return;
-
-                    const newTodo = new ToDo(Date.now(), title, description, dueDate, priority, [], false);
-                    p.add(newTodo);
-                    storageModule.saveState(projects);
+                addBtn.addEventListener("click", () => {
+                    const todo = controllerModule.createToDo(
+                        inputTitle.value.trim(),
+                        descBox.value.trim(),
+                        dueDateInput.value,
+                        prioritySelect.value,
+                        []
+                    );
+                    controllerModule.addTodoToProject(p.getId(), todo);
+                    storageModule.saveState(controllerModule.getProjects());
+                    renderPage();
                 });
 
-                cancelTaskBtn.addEventListener("click", () => {
-                    input.value = "";
+                cancelBtn.addEventListener("click", () => {
+                    inputTitle.value = "";
                     dueDateInput.value = "";
-                    comboBoxPriority.value = option1.textContent;
-                    descriptionTextBox.value = ""
+                    prioritySelect.selectedIndex = 0;
+                    descBox.value = ""
                 });
 
-                let todoContainer = document.createElement('div');
+                const todoContainer = document.createElement('div');
                 todoContainer.classList.add('todo-container');
                 p.getTodos().forEach(t => {
                     const todoDiv = document.createElement('div');
@@ -132,6 +112,16 @@ const renderModule = (function () {
                     let dueDateElement = document.createElement('p');
                     let moreInfoBtn = document.createElement('button');
 
+                    const detailsDiv = document.createElement('div');
+                    detailsDiv.classList.add('todo-details');
+                    detailsDiv.style.display = 'none';
+
+                    const descElement = document.createElement('p');
+                    descElement.textContent = t.getDescription();
+                    const priorityElement = document.createElement('p');
+                    priorityElement.textContent = `Priority: ${t.getPriority()}`;
+                    detailsDiv.append(descElement, priorityElement);
+
                     titleElement.classList.add('todo-title');
                     dueDateElement.classList.add('todo-duedate');
                     moreInfoBtn.classList.add('todo-moreinfo');
@@ -140,26 +130,28 @@ const renderModule = (function () {
                     dueDateElement.textContent = t.getDueDate();
                     moreInfoBtn.textContent = 'Expand';
 
-                    todoDiv.append(titleElement, dueDateElement);
-                    todoContainer.appendChild(todoDiv);
-
-                    todoDiv.appendChild(titleElement);
-                    todoDiv.appendChild(dueDateElement);
-                    todoDiv.appendChild(moreInfoBtn);
-
                     moreInfoBtn.addEventListener('click', () => {
-                        todoDiv.classList.remove('todo');
-                        todoDiv.classList.add('todo-expanded');
-                        // to add more info of todo
-                        todoDiv.append()
+                        if (detailsDiv.style.display === 'none') {
+                            detailsDiv.style.display = 'block'; // show details
+                            todoDiv.classList.add('todo-expanded');
+                            moreInfoBtn.textContent = 'Collapse';
+                        } else {
+                            detailsDiv.style.display = 'none'; // hide details
+                            todoDiv.classList.remove('todo-expanded');
+                            moreInfoBtn.textContent = 'Expand';
+                        }
                     });
+                    todoDiv.append(titleElement, dueDateElement, moreInfoBtn, detailsDiv);
+                    todoContainer.appendChild(todoDiv);
+                    list.appendChild(todoContainer);
                 });
             });
-        });
+            
+        })
         app.appendChild(sidebar);
         app.appendChild(list);
-    }
+    }    
     return { renderPage };
-})();
+    })();
 
-export { renderModule };
+    export { renderModule };

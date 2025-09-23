@@ -1,6 +1,6 @@
 class ToDo {
     constructor(id = 0, title = "", description = "", 
-        dueDate = Date.now(), priority, checklist, completed = false)
+        dueDate = Date.now(), priority, checklist)
     {
         this.id = id;
         this.title = title;
@@ -8,7 +8,6 @@ class ToDo {
         this.dueDate = dueDate;
         this.priority = priority;
         this.checklist = checklist;
-        this.completed = completed;
     }
     getTitle = () => this.title;
     setTitle = (title) => { this.title = title; };
@@ -24,9 +23,6 @@ class ToDo {
 
     getChecklist = () => this.checklist;
     setChecklist = (checklist) => { this.checklist = checklist; };
-
-    getCompleted = () => this.completed;
-    toggleComplete = () => this.completed = !this.completed;
 
     getId = () => this.id;
     createId = () => this.id = Date.now();

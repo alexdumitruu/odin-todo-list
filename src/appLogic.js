@@ -1,30 +1,46 @@
 import { ToDo, Project } from "./classes";
 
 const controllerModule = (function () {
-    let todos = {};
-    let projects = {};
+    let projects = [];
 
     const createToDo = (title, description, dueDate, priority, checklist) => {
         const id = Date.now();
-        return new ToDo(id, title, description, dueDate, priority, checklist, false);
+        return new ToDo(id, title, description, dueDate, priority, checklist);
     };
-
-    const deleteToDo = (id) => delete todos[id];
 
     const createProject = (name, todosArr) => {
         const id = Date.now();
-        return new Project(id, name, todosArr);
+        const project = new Project(id, name, todosArr);
+        projects.push(project);
+        return project;
     }
 
-    const deleteProject = (id) => delete projects[id];
+    const deleteProject = (id) => {
+        projects = projects.filter(p => p.getId() !== projectId);
+    };
+
+    const getProjects = () => projects; 
+    const addTodoToProject = (projectId, todo) => {
+        const project = projects.find(p => p.getId() === projectId);
+        if (project) {
+            project.add(todo);
+        }
+    }
+    const deleteTodoFromProject = (projectId, todoId) => {
+        const project = projects.find(p => p.getId() === projectId);
+        if (project) {
+            const todos = project.getTodos().filter(t => t.getId() !== todoId);
+            project.setTodos(todos);
+        }
+    }
 
     return {
-        todos,
-        projects,
         createToDo,
+        deleteTodoFromProject,
         createProject,
-        deleteToDo,
-        deleteProject
+        deleteProject,
+        addTodoToProject,
+        getProjects
     }
 })();
 

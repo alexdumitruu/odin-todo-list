@@ -1,11 +1,15 @@
 import { ToDo, Project } from "./classes";
 import { storageModule } from "./storage";
 
-const app = document.querySelector('.app');
-
 const renderModule = (function () {
     const renderPage = () => {
         let projects = storageModule.loadState();
+        const app = document.querySelector('.app');
+        // if (!app) {
+        //     console.error('No .app element found!');
+        //     return;
+        // }
+        app.innerHTML = "";
         // sidebar
         let sidebar = document.createElement('div');
         sidebar.classList.add('sidebar')
@@ -152,7 +156,6 @@ const renderModule = (function () {
                 });
             });
         });
-        app.innerHTML = '';
         app.appendChild(sidebar);
         app.appendChild(list);
     }

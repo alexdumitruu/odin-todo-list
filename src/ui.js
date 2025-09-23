@@ -1,9 +1,9 @@
-import { Project } from "./classes";
+import { ToDo, Project } from "./classes";
 import { storageModule } from "./storage";
 
 const app = document.querySelector('.app');
 
-const renderModule = (function() {
+const renderModule = (function () {
     const renderPage = () => {
         let projects = storageModule.loadState();
         // sidebar
@@ -11,8 +11,9 @@ const renderModule = (function() {
         sidebar.classList.add('sidebar')
 
         const newProjectBtn = document.createElement('button');
-        sidebar.appendChild(newProjectBtn);
+        newProjectBtn.textContent = "New Project";
         newProjectBtn.classList.add('new-project-button');
+        sidebar.appendChild(newProjectBtn);
 
         newProjectBtn.addEventListener("click", () => {
             const newProjDiv = document.createElement('div');
@@ -62,6 +63,7 @@ const renderModule = (function() {
             sidebar.appendChild(projDiv);
 
             projDiv.addEventListener("click", () => {
+                list.innerHTML = "";
                 let newToDoDiv = document.createElement('div');
                 newToDoDiv.classList.add('new-todo-container');
                 list.appendChild(newToDoDiv);
@@ -90,14 +92,38 @@ const renderModule = (function() {
                 const addTaskBtn = document.createElement('button');
                 const cancelTaskBtn = document.createElement('button');
 
-                //to add button functionalities
+                addTaskBtn.textContent = "Add Task";
+                cancelTaskBtn.textContent = "Cancel";
+
+                newToDoDiv.append(input, dueDateInput, comboBoxPriority,
+                    descriptionTextBox, addTaskBtn, cancelTaskBtn);
+
+                addTaskBtn.addEventListener("click", () => {
+                    const title = input.value.trim();
+                    const dueDate = dueDateInput.value;
+                    const priority = comboBoxPriority.value;
+                    const description = descriptionTextBox.value.trim();
+
+                    if (!title) return;
+
+                    const newTodo = new ToDo(Date.now(), title, description, dueDate, priority, [], false);
+                    p.add(newTodo);
+                    storageModule.saveState(projects);
+                });
+
+                cancelTaskBtn.addEventListener("click", () => {
+                    input.value = "";
+                    dueDateInput.value = "";
+                    comboBoxPriority.value = option1.textContent;
+                    descriptionTextBox.value = ""
+                });
 
                 let todoContainer = document.createElement('div');
                 todoContainer.classList.add('todo-container');
                 p.getTodos().forEach(t => {
-                    let todoDiv = document.createElement('div');
+                    const todoDiv = document.createElement('div');
                     todoDiv.classList.add('todo');
-                    
+
                     let titleElement = document.createElement('h2');
                     let dueDateElement = document.createElement('p');
                     let moreInfoBtn = document.createElement('button');
@@ -110,6 +136,9 @@ const renderModule = (function() {
                     dueDateElement.textContent = t.getDueDate();
                     moreInfoBtn.textContent = 'Expand';
 
+                    todoDiv.append(titleElement, dueDateElement);
+                    todoContainer.appendChild(todoDiv);
+
                     todoDiv.appendChild(titleElement);
                     todoDiv.appendChild(dueDateElement);
                     todoDiv.appendChild(moreInfoBtn);
@@ -119,12 +148,15 @@ const renderModule = (function() {
                         todoDiv.classList.add('todo-expanded');
                         // to add more info of todo
                         todoDiv.append()
-                    })
-                })
-            })
+                    });
+                });
+            });
         });
-        return { renderPage };
+        app.innerHTML = '';
+        app.appendChild(sidebar);
+        app.appendChild(list);
     }
+    return { renderPage };
 })();
 
-export {renderModule};
+export { renderModule };

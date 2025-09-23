@@ -1,5 +1,5 @@
 body {
-  background-color: rebeccapurple;
+  background-color: rgb(216, 179, 252);
 }
 
 .app {
@@ -89,4 +89,113 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+/* ----- LIST SECTION ----- */
+.list {
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.todo-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.todo {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: box-shadow 0.2s;
+}
+.todo:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+}
+
+.todo-expanded {
+  background-color: #ffffff;
+  border: 2px solid #88c0d0;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.todo-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2e3440;
+  margin: 0;
+}
+
+.todo-duedate {
+  font-size: 0.9rem;
+  color: #5e81ac;
+  margin: 0;
+}
+
+.todo-moreinfo {
+  background-color: #5e81ac;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+}
+.todo-moreinfo:hover {
+  background-color: #81a1c1;
+}
+
+.new-todo-container {
+  background-color: #e5e9f0;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-todo,
+.input-date-todo,
+.textarea-todo,
+.new-todo-container select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 0.9rem;
+}
+
+.input-date-todo {
+  max-width: 200px;
+}
+
+.new-todo-container button {
+  align-self: flex-start;
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  background-color: #88c0d0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+.new-todo-container button:hover {
+  background-color: #8fbcbb;
 }

@@ -1,3 +1,5 @@
+import { ToDo, Project } from "./classes";
+
 const storageModule = (function() {
     const saveState = (projectsArr) => {
         projectsArr.forEach(project => {
@@ -18,7 +20,7 @@ const storageModule = (function() {
                 t.priority, t.checklist, t.completed
             ));
                 const restoredProject = new Project(data.id, data.name, restoredTodos);
-                projects.push(data);
+                projects.push(restoredProject);
             }
         }
         return projects;

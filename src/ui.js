@@ -122,14 +122,20 @@ const renderModule = (function () {
 
                     const titleElement = document.createElement('h2');
                     const dueDateElement = document.createElement('p');
+                    const btnDiv = document.createElement('div');
                     const moreInfoBtn = document.createElement('button');
+                    const deleteTodoBtn = document.createElement('button');
 
                     const detailsDiv = document.createElement('div');
                     titleElement.classList.add('todo-title');
                     dueDateElement.classList.add('todo-due');
+                    deleteTodoBtn.classList.add('todo-delete-btn');
+                    deleteTodoBtn.textContent = "Delete";
                     moreInfoBtn.classList.add('todo-expand-btn');
+                    btnDiv.classList.add('btn-div');
                     detailsDiv.classList.add('todo-details');
                     detailsDiv.style.display = 'none';
+                    btnDiv.append(moreInfoBtn, deleteTodoBtn);
 
                     const descElement = document.createElement('p');
                     descElement.textContent = t.getDescription();
@@ -156,7 +162,14 @@ const renderModule = (function () {
                             moreInfoBtn.textContent = 'Expand';
                         }
                     });
-                    todoDiv.append(titleElement, dueDateElement, moreInfoBtn, detailsDiv);
+
+                    deleteTodoBtn.addEventListener('click', () => {
+                        controllerModule.deleteTodoFromProject(p.getId(), t.getId());
+                        storageModule.saveState(controllerModule.getProjects());
+                        renderModule.renderPage(); 
+                    });
+
+                    todoDiv.append(titleElement, dueDateElement, btnDiv, detailsDiv);
                     todoContainer.appendChild(todoDiv);
                     list.appendChild(todoContainer);
                 });

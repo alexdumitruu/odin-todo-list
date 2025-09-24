@@ -1,4 +1,5 @@
 import { ToDo, Project } from "./classes";
+import { storageModule } from "./storage";
 
 const controllerModule = (function () {
     let projects = [];
@@ -16,23 +17,26 @@ const controllerModule = (function () {
     }
 
     const deleteProject = (id) => {
-        projects = projects.filter(p => p.getId() !== projectId);
+        projects = projects.filter(p => p.getId() !== id);
     };
 
     const getProjects = () => projects; 
+    const setProjects = (projectArray) => {
+        projects = projectArray;
+    };
     const addTodoToProject = (projectId, todo) => {
         const project = projects.find(p => p.getId() === projectId);
         if (project) {
             project.add(todo);
         }
-    }
+    };
     const deleteTodoFromProject = (projectId, todoId) => {
         const project = projects.find(p => p.getId() === projectId);
         if (project) {
             const todos = project.getTodos().filter(t => t.getId() !== todoId);
             project.setTodos(todos);
         }
-    }
+    };
 
     return {
         createToDo,
@@ -40,8 +44,9 @@ const controllerModule = (function () {
         createProject,
         deleteProject,
         addTodoToProject,
-        getProjects
-    }
+        getProjects,
+        setProjects
+    };
 })();
 
 export { controllerModule };

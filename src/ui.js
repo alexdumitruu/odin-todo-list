@@ -13,10 +13,15 @@ const renderModule = (function () {
         const sidebar = document.createElement('div');
         sidebar.classList.add('sidebar')
 
+        const details = document.createElement('h2');
+        details.classList.add('details');
+        details.textContent = 'Double click to delete a project.';
+
         const newProjectBtn = document.createElement('button');
         newProjectBtn.textContent = "New Project";
         newProjectBtn.classList.add('new-project-button');
         sidebar.appendChild(newProjectBtn);
+        sidebar.appendChild(details);
 
         newProjectBtn.addEventListener("click", () => {
             const newProjDiv = document.createElement('div');
@@ -68,6 +73,10 @@ const renderModule = (function () {
                 const dueDateInput = document.createElement('input');
                 dueDateInput.type = 'date';
                 const prioritySelect = document.createElement('select');
+                newTodoDiv.classList.add('new-todo-form'); // add this line
+                inputTitle.classList.add('todo-input-title');
+                dueDateInput.classList.add('todo-input-date');
+                prioritySelect.classList.add('todo-input-priority');
                 ['Low', 'Medium', 'High'].forEach(priorityLabel => {
                     const opt = document.createElement('option');
                     opt.value = priorityLabel;
@@ -77,6 +86,9 @@ const renderModule = (function () {
                 const descBox = document.createElement('textarea');
                 const addBtn = document.createElement('button');
                 const cancelBtn = document.createElement('button');
+                descBox.classList.add('todo-input-desc');
+                addBtn.classList.add('todo-add-btn');
+                cancelBtn.classList.add('todo-cancel-btn');
                 addBtn.textContent = 'Add Task';
                 cancelBtn.textContent = 'Cancel';
                 newTodoDiv.append(inputTitle, dueDateInput, prioritySelect, descBox, addBtn, cancelBtn);
@@ -108,11 +120,14 @@ const renderModule = (function () {
                     const todoDiv = document.createElement('div');
                     todoDiv.classList.add('todo');
 
-                    let titleElement = document.createElement('h2');
-                    let dueDateElement = document.createElement('p');
-                    let moreInfoBtn = document.createElement('button');
+                    const titleElement = document.createElement('h2');
+                    const dueDateElement = document.createElement('p');
+                    const moreInfoBtn = document.createElement('button');
 
                     const detailsDiv = document.createElement('div');
+                    titleElement.classList.add('todo-title');
+                    dueDateElement.classList.add('todo-due');
+                    moreInfoBtn.classList.add('todo-expand-btn');
                     detailsDiv.classList.add('todo-details');
                     detailsDiv.style.display = 'none';
 
@@ -146,12 +161,18 @@ const renderModule = (function () {
                     list.appendChild(todoContainer);
                 });
             });
-            
-        })
+
+            projDiv.addEventListener('dblclick', () => {
+                controllerModule.deleteProject(p.getId());
+                localStorage.removeItem(`project_${p.getId()}`);
+                sidebar.removeChild(projDiv);
+            });
+
+        });
         app.appendChild(sidebar);
         app.appendChild(list);
-    }    
+    }
     return { renderPage };
-    })();
+})();
 
-    export { renderModule };
+export { renderModule };
